@@ -1,0 +1,7 @@
+/.vagrant/
+/INBOX/
+/tests/logs/
+/vendor/
+/composer.lock
+/composer.phar
+/utilities/vagrant/Homestead.yaml

@@ -1,0 +1,79 @@
+#!/usr/bin/env php
+<?php
+
+namespace SunCoastConnection\ClaimsToEMRGearman;
+
+use \Kicken\Gearman\Worker;
+use \Kicken\Gearman\Job\WorkerJob;
+use \SunCoastConnection\ClaimsToEMR\Document\Options;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker\ImportClaims;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker\ReturnRemoteConnection;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker\RegisterRemoteConnection;
+
+//** LOAD AUTOLOADER **//
+if(strpos(__DIR__, '/vendor/') === false) {
+	require_once(__DIR__.'/vendor/autoload.php');
+} else {
+	require_once(substr(__DIR__, 0, strpos(__DIR__, '/vendor/') + 8).'autoload.php');
+}
+
+// Load Configurations
+$options = Options::getInstance(require_once(__DIR__.'/config/gearman-worker.php'));
+
+// Setup Gearman connection to servers
+$gearmanWorker = new Worker(
+	$options->get('Gearman.servers', '127.0.0.1:4730')
+);
+
+// Register worker RegisterRemoteConnection
+$gearmanWorker->registerFunction('registerRemoteConnection',
+	function(WorkerJob $job) use ($options) {
+		$worker = RegisterRemoteConnection::getInstance($options);
+
+		$log = [];
+
+		$returnValue = $worker->run($job, $log);
+
+		if(count($log)) {
+			echo "Error:\t".implode(PHP_EOL."Error:\t", $log).PHP_EOL;
+		}
+
+		return $returnValue;
+	}
+);
+
+// Register worker ReturnRemoteConnection
+$gearmanWorker->registerFunction('returnRemoteConnection',
+	function(WorkerJob $job) use ($options) {
+		$worker = ReturnRemoteConnection::getInstance($options);
+
+		$log = [];
+
+		$returnValue = $worker->run($job, $log);
+
+		if(count($log)) {
+			echo "Error:\t".implode(PHP_EOL."Error:\t", $log).PHP_EOL;
+		}
+
+		return $returnValue;
+	}
+);
+
+// Register worker ImportClaims
+$gearmanWorker->registerFunction('importClaims',
+	function(WorkerJob $job) use ($options) {
+		$worker = ImportClaims::getInstance($options);
+
+		$log = [];
+
+		$returnValue = $worker->run($job, $log);
+
+		if(count($log)) {
+			echo "Error:\t".implode(PHP_EOL."Error:\t", $log).PHP_EOL;
+		}
+
+		return $returnValue;
+	}
+);
+
+$gearmanWorker->work();

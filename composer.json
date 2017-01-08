@@ -1,0 +1,45 @@
+{
+    "name": "suncoast-connection/claimstoemr-gearman",
+    "description": "Gearman workers for ClaimsToEMR.",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Sam Likins",
+            "email": "sam.likins@wsi-services.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "suncoast-connection/claimstoemr": "dev-master",
+        "kicken/gearman-php": "dev-master",
+        "phpseclib/phpseclib": "2.0.*"
+   	},
+    "require-dev": {
+        "kicken/gearman-php": "dev-master",
+        "phpseclib/phpseclib": "2.0.*",
+        "laravel/homestead": "^4",
+        "phploc/phploc": "3.0.*",
+        "phpunit/phpunit": "5.3.*",
+        "mockery/mockery": "0.9.*",
+        "mikey179/vfsStream": "1.6.*"
+    },
+    "autoload": {
+        "psr-4": {
+            "SunCoastConnection\\ClaimsToEMRGearman\\": "source/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SunCoastConnection\\ClaimsToEMRGearman\\Tests\\": "tests/source"
+        }
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url":  "https://github.com/SunCoastConnection/ClaimsToEMR.git"
+        }
+    ]
+}
