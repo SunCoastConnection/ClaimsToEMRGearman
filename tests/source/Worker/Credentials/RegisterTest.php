@@ -1,26 +1,26 @@
 <?php
 
-namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Worker;
+namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Worker\Credentials;
 
 use \Kicken\Gearman\Job\WorkerJob;
 use \org\bovigo\vfs\vfsStream;
 use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker\RegisterRemoteConnection;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Register;
 
-class RegisterRemoteConnectionTest extends BaseTestCase {
+class RegisterTest extends BaseTestCase {
 
-	protected $registerRemoteConnection;
+	protected $register;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->registerRemoteConnection = $this->getMockery(
-			RegisterRemoteConnection::class
+		$this->register = $this->getMockery(
+			Register::class
 		)->makePartial();
 	}
 
 	/**
-	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\RegisterRemoteConnection::run()
+	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Register::run()
 	 */
 	public function testRunWithSuccessfulWrite() {
 		$job = $this->getMockery(
@@ -31,7 +31,7 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 
 		$parentDirectory = vfsStream::setup('parent', 0700);
 
-		$this->registerRemoteConnection->shouldAllowMockingProtectedMethods()
+		$this->register->shouldAllowMockingProtectedMethods()
 			->shouldReceive('options->get')
 			->once()
 			->with('Credentials.path')
@@ -58,7 +58,7 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 
 		$this->assertEquals(
 			0,
-			$this->registerRemoteConnection->run($job, $log),
+			$this->register->run($job, $log),
 			'Successfule response not recieved'
 		);
 
@@ -91,7 +91,7 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 	}
 
 	/**
-	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\RegisterRemoteConnection::run()
+	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Register::run()
 	 */
 	public function testRunWithParentDirectoryOwnedByRoot() {
 		$job = $this->getMockery(
@@ -103,7 +103,7 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 		$parentDirectory = vfsStream::setup('parent', 0700);
 		$parentDirectory->chown(vfsStream::OWNER_ROOT);
 
-		$this->registerRemoteConnection->shouldAllowMockingProtectedMethods()
+		$this->register->shouldAllowMockingProtectedMethods()
 			->shouldReceive('options->get')
 			->once()
 			->with('Credentials.path')
@@ -129,13 +129,13 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 
 		$this->assertEquals(
 			1,
-			$this->registerRemoteConnection->run($job, $log),
+			$this->register->run($job, $log),
 			'Failed credentials directory creation response not recieved'
 		);
 	}
 
 	/**
-	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\RegisterRemoteConnection::run()
+	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Register::run()
 	 */
 	public function testRunWithCredentialsDirectoryOwnedByRoot() {
 		$job = $this->getMockery(
@@ -151,7 +151,7 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 		$credentialsDirectory->chmod(0700);
 		$credentialsDirectory->chown(vfsStream::OWNER_ROOT);
 
-		$this->registerRemoteConnection->shouldAllowMockingProtectedMethods()
+		$this->register->shouldAllowMockingProtectedMethods()
 			->shouldReceive('options->get')
 			->once()
 			->with('Credentials.path')
@@ -159,13 +159,13 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 
 		$this->assertEquals(
 			2,
-			$this->registerRemoteConnection->run($job, $log),
+			$this->register->run($job, $log),
 			'Failed '
 		);
 	}
 
 	/**
-	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\RegisterRemoteConnection::run()
+	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Register::run()
 	 */
 	public function testRunWithCredentialsFileOwnedByRoot() {
 		$job = $this->getMockery(
@@ -201,7 +201,7 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 		$credentialsFile->chmod(0700);
 		$credentialsFile->chown(vfsStream::OWNER_ROOT);
 
-		$this->registerRemoteConnection->shouldAllowMockingProtectedMethods()
+		$this->register->shouldAllowMockingProtectedMethods()
 			->shouldReceive('options->get')
 			->once()
 			->with('Credentials.path')
@@ -215,7 +215,7 @@ class RegisterRemoteConnectionTest extends BaseTestCase {
 
 		$this->assertEquals(
 			3,
-			$this->registerRemoteConnection->run($job, $log),
+			$this->register->run($job, $log),
 			'Failed '
 		);
 	}

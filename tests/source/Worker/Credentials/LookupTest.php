@@ -1,26 +1,26 @@
 <?php
 
-namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Worker;
+namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Worker\Credentials;
 
 use \Kicken\Gearman\Job\WorkerJob;
 use \org\bovigo\vfs\vfsStream;
 use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker\ReturnRemoteConnection;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Lookup;
 
-class ReturnRemoteConnectionTest extends BaseTestCase {
+class LookupTest extends BaseTestCase {
 
-	protected $returnRemoteConnection;
+	protected $lookup;
 
 	public function setUp() {
 		parent::setUp();
 
-		$this->returnRemoteConnection = $this->getMockery(
-			ReturnRemoteConnection::class
+		$this->lookup = $this->getMockery(
+			Lookup::class
 		)->makePartial();
 	}
 
 	/**
-	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\ReturnRemoteConnection::run()
+	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Lookup::run()
 	 */
 	public function testRunWithSuccessfulRead() {
 		$job = $this->getMockery(
@@ -56,7 +56,7 @@ class ReturnRemoteConnectionTest extends BaseTestCase {
 
 		$credentialsDirectory = $parentDirectory->getChild('credentials');
 
-		$this->returnRemoteConnection->shouldAllowMockingProtectedMethods()
+		$this->lookup->shouldAllowMockingProtectedMethods()
 			->shouldReceive('options->get')
 			->once()
 			->with('Credentials.path')
@@ -68,13 +68,13 @@ class ReturnRemoteConnectionTest extends BaseTestCase {
 
 		$this->assertEquals(
 			json_encode($connection),
-			$this->returnRemoteConnection->run($job, $log),
+			$this->lookup->run($job, $log),
 			'Successful response not recieved'
 		);
 	}
 
 	/**
-	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\ReturnRemoteConnection::run()
+	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Lookup::run()
 	 */
 	public function testRunWithFileMissing() {
 		$job = $this->getMockery(
@@ -93,7 +93,7 @@ class ReturnRemoteConnectionTest extends BaseTestCase {
 
 		$credentialsDirectory = $parentDirectory->getChild('credentials');
 
-		$this->returnRemoteConnection->shouldAllowMockingProtectedMethods()
+		$this->lookup->shouldAllowMockingProtectedMethods()
 			->shouldReceive('options->get')
 			->once()
 			->with('Credentials.path')
@@ -105,13 +105,13 @@ class ReturnRemoteConnectionTest extends BaseTestCase {
 
 		$this->assertEquals(
 			1,
-			$this->returnRemoteConnection->run($job, $log),
+			$this->lookup->run($job, $log),
 			'Failed response not recieved'
 		);
 	}
 
 	/**
-	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\ReturnRemoteConnection::run()
+	 * @covers SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Lookup::run()
 	 */
 	public function testRunWithFileOwnedByRoot() {
 		$job = $this->getMockery(
@@ -151,7 +151,7 @@ class ReturnRemoteConnectionTest extends BaseTestCase {
 		$credentialsFile->chmod(0700);
 		$credentialsFile->chown(vfsStream::OWNER_ROOT);
 
-		$this->returnRemoteConnection->shouldAllowMockingProtectedMethods()
+		$this->lookup->shouldAllowMockingProtectedMethods()
 			->shouldReceive('options->get')
 			->once()
 			->with('Credentials.path')
@@ -163,7 +163,7 @@ class ReturnRemoteConnectionTest extends BaseTestCase {
 
 		$this->assertEquals(
 			2,
-			$this->returnRemoteConnection->run($job, $log),
+			$this->lookup->run($job, $log),
 			'Failed response not recieved'
 		);
 	}

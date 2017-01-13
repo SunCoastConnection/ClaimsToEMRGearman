@@ -1,18 +1,20 @@
 <?php
 
-namespace SunCoastConnection\ClaimsToEMRGearman\Worker;
+namespace SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials;
 
 use \Kicken\Gearman\Job\WorkerJob;
 use \SunCoastConnection\ClaimsToEMRGearman\Worker;
 
-class ReturnRemoteConnection extends Worker {
+class Lookup extends Worker {
 
 	/**
-	 * Run the ReturnRemoteConnection Worker
+	 * Run the Lookup Worker
 	 *
 	 * @param  \Kicken\Gearman\Job\WorkerJob  $job  Job request to perform run on
 	 *
-	 * @return mixed  Saved Configuration or return code (1 = credentials file missing, 2 = failed to read configuration file)
+	 * @return mixed  Configuration or return code:
+	 *     1 = credentials file missing
+	 *     2 = failed to read configuration file
 	 */
 	public function run(WorkerJob $job, &$log) {
 		$credentialsPath = $this->options()->get('Credentials.path');

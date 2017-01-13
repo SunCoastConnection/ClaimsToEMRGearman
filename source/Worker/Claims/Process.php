@@ -1,12 +1,10 @@
 <?php
 
-namespace SunCoastConnection\ClaimsToEMRGearman\Worker;
+namespace SunCoastConnection\ClaimsToEMRGearman\Worker\Claims;
 
 use \Carbon\Carbon;
 use \Exception;
 use \Kicken\Gearman\Job\WorkerJob;
-use \phpseclib\Crypt\RSA;
-use \phpseclib\Net\SFTP;
 use \SunCoastConnection\ClaimsToEMR\Document\Raw;
 use \SunCoastConnection\ClaimsToEMR\Models\PqrsImportFiles;
 use \SunCoastConnection\ClaimsToEMR\Store\Database;
@@ -14,14 +12,15 @@ use \SunCoastConnection\ClaimsToEMR\X12N837;
 use \SunCoastConnection\ClaimsToEMR\X12N837\Cache;
 use \SunCoastConnection\ClaimsToEMRGearman\Worker;
 
-class ImportClaims extends Worker {
+class Process extends Worker {
 
 	/**
-	 * Run the ImportClaims Worker
+	 * Run the Process Worker
 	 *
 	 * @param  \Kicken\Gearman\Job\WorkerJob  $job  Job request to perform run on
 	 *
-	 * @return integer  Return code ()
+	 * @return integer  Return code:
+	 *     1 = Failed looking up claims
 	 */
 	public function run(WorkerJob $job, &$log) {
 		$workload = json_decode($job->getWorkload(), true);
@@ -44,31 +43,21 @@ class ImportClaims extends Worker {
 	}
 
 	protected function loadConfigurations($workload) {
-		$remoteConfigurationPath = $this->options()->get('Credentials.path').
-			'/'.$workload['client'].'.json';
-
-		if(!file_exists($remoteConfigurationPath)) {
-			// Failed to read configuration
-			throw new Exception('Remote configuration faild to load: '.$remoteConfigurationPath, 1);
-		}
-
-		// Get remote configuration
-		$this->options()->set(
-			'Remote',
-			json_decode(
-				file_get_contents($remoteConfigurationPath),
-				true
-			)
+		$configuration = $this->gearmanJob(
+			$this->options()->get('Workers.Credentials.Lookup'),
+			json_encode([
+				'client' => $workload['client'],
+			])
 		);
 
-		$claimsConfigurationPath = $this->options()->get('ClaimsConfig');
-
-		if(!is_readable($claimsConfigurationPath)) {
-			throw new Exception('Claims configuration faild to load: '.$claimsConfigurationPath, 2);
+		if(is_numeric($configuration) || is_null($configuration)) {
+			throw new Exception('Claims configuration failed to load: '.$workload['client'], 1);
+		} else {
+			$this->options()->set(
+				'Claims',
+				json_decode($configuration, true)
+			);
 		}
-
-		//** GET CLAIMS CONFIGURATION OPTIONS **//
-		$this->options()->set('Claims', include($claimsConfigurationPath));
 	}
 
 	protected function processClaim($workload) {
@@ -147,52 +136,13 @@ class ImportClaims extends Worker {
 	}
 
 	protected function getClaimsFile($relativeFilePath) {
-		try {
-			$sftp = $this->getSFTPconnection();
-		} catch (Exception $e) {
-			throw new Exception('Failed to connect to remote filesystem', 5, $e);
-		}
-
-		$path = dirname($this->options()->get('Remote.ssh.site').'/PQRS/X12N837/'.$relativeFilePath);
-
-		if(!$sftp->chdir($path)) {
-			throw new Exception('Failed connecting to remote site claims directory: '.$path, 6);
-		}
-
-		$claim = $sftp->get(basename($relativeFilePath));
-
-		if(!$claim) {
-			throw new Exception('Failed to open claim file', 7);
-		}
-
-		return $claim;
-	}
-
-	protected function getSFTPconnection() {
-		$sftp = new SFTP(
-			$this->options()->get('Remote.ssh.host', '127.0.0.1'),
-			$this->options()->get('Remote.ssh.port', '22')
+		return $this->gearmanJob(
+			$this->options()->get('Workers.Claims.Retrieve'),
+			json_encode([
+				'host' => $this->options()->get('Remote.ssh.host'),
+				'port' => $this->options()->get('Remote.ssh.port'),
+				'path' => $this->options()->get('Remote.ssh.site').'/'.$relativeFilePath,
+			])
 		);
-
-		if($this->options()->get('SFTP.privateKey.path')) {
-			// Load private key if path provided
-			$secret = new RSA();
-
-			if($this->options()->get('SFTP.privateKey.passphrase') != '') {
-				// If the private key is encrypted, set a passphrase
-				$secret->setPassword($this->options()->get('SFTP.privateKey.passphrase'));
-			}
-
-			// Load the private key
-			$secret->loadKey(file_get_contents($this->options()->get('SFTP.privateKey.path')));
-		} else {
-			$secret = $this->options()->get('SFTP.password');
-		}
-
-		if(!$sftp->login($this->options()->get('SFTP.username'), $secret)) {
-			throw new Exception('Login failed');
-		}
-
-		return $sftp;
 	}
 }

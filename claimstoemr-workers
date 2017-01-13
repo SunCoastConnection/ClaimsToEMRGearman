@@ -6,74 +6,218 @@ namespace SunCoastConnection\ClaimsToEMRGearman;
 use \Kicken\Gearman\Worker;
 use \Kicken\Gearman\Job\WorkerJob;
 use \SunCoastConnection\ClaimsToEMR\Document\Options;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker\ImportClaims;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker\ReturnRemoteConnection;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker\RegisterRemoteConnection;
 
-//** LOAD AUTOLOADER **//
-if(strpos(__DIR__, '/vendor/') === false) {
-	require_once(__DIR__.'/vendor/autoload.php');
-} else {
-	require_once(substr(__DIR__, 0, strpos(__DIR__, '/vendor/') + 8).'autoload.php');
+
+// Display errors
+function display_error($errorMessage) {
+	echo $errorMessage;
+	echo PHP_EOL;
 }
 
-// Load Configurations
-$options = Options::getInstance(require_once(__DIR__.'/config/gearman-worker.php'));
+
+// Display workers
+function display_workers($errorMessage = false) {
+	if($errorMessage) {
+		display_error($errorMessage);
+		echo PHP_EOL;
+	}
+
+	if(
+		$GLOBALS['setup']['configuration'] &&
+		count($GLOBALS['setup']['configuration']->get('workers'))
+	) {
+		echo "Workers:\n";
+		echo "\t".implode("\n\t", array_keys($GLOBALS['setup']['configuration']->get('workers')))."\n";
+		echo PHP_EOL;
+	}
+}
+
+
+// Display help
+function display_help($errorMessage = false) {
+	if($errorMessage) {
+		display_error($errorMessage);
+		echo PHP_EOL;
+	}
+
+	echo "USAGE: ".basename($GLOBALS['argv'][0])." [ [ -h | --help ] | [ -c CONFIGFILE |--config=CONFIGFILE ] WORKERNAME ... ]\n\n";
+	echo "Options:\n";
+	echo "\t-h, --help\tDisplay help\n";
+	echo "\t-c, --config\tSpecify configuration file to use\n";
+	echo PHP_EOL;
+	echo "Arguments:\n";
+	echo "\tWORKERNAME\tSpecify workers to spawn\n";
+	echo PHP_EOL;
+
+	display_workers();
+}
+
+
+// Set default setup
+$setup = [
+	'command' => [
+		'options' => [],
+		'arguments' => [],
+		'argumentIndex' => 0.
+	],
+	'configurationPaths' => [
+		__DIR__.'/config/gearman-worker.php',
+		__DIR__.'/gearman-worker.php',
+	],
+	'configurationFound' => false,
+	'configuration' => null,
+	'help' => false,
+	'workers' => [],
+];
+
+
+// Parse command line options
+$setup['command']['options'] = getopt(
+	'c:h',
+	[
+		'config:',
+		'help'
+	],
+	$setup['command']['argumentIndex']
+);
+
+
+// Parse command line arguments
+$setup['command']['arguments'] = array_slice(
+	$argv,
+	$setup['command']['argumentIndex']
+);
+
+
+// Iterate over options
+foreach($setup['command']['options'] as $option => $optionValue) {
+	switch($option) {
+		case 'help':
+		case 'h':
+			$setup['help'] = true;
+			break;
+
+		case 'config':
+		case 'c':
+			if(!is_array($optionValue)) {
+				$optionValue = [ $optionValue ];
+			}
+
+			$setup['configurationPaths'] = array_merge(
+				$optionValue,
+				$setup['configurationPaths']
+			);
+			break;
+	}
+}
+
+
+// Load autoloader
+if(strpos(__DIR__, '/vendor/') === false) {
+	$vendorDirectory = __DIR__.'/vendor/';
+} else {
+	$vendorDirectory = substr(__DIR__, 0, strpos(__DIR__, '/vendor/') + 8);
+}
+
+if(file_exists($vendorDirectory.'autoload.php')) {
+	require_once($vendorDirectory.'autoload.php');
+} else {
+	display_error('Missing vendor directory.');
+
+	exit(1);
+}
+
+
+// Loading configuration file
+foreach($setup['configurationPaths'] as $configurationPathIndex => $configurationPath) {
+	if(is_readable($configurationPath)) {
+		$setup['configurationFound'] = $configurationPathIndex;
+
+		break;
+	}
+}
+
+if($setup['configurationFound'] === false) {
+	display_error('Missing or unreadable configuration file.');
+
+	exit(2);
+}
+
+$setup['configuration'] = Options::getInstance(
+	require_once(
+		$setup['configurationPaths'][$setup['configurationFound']]
+	)
+);
+
+
+// Display help output
+if($setup['help']) {
+	display_help();
+
+	exit(0);
+}
+
+
+// Verify workers
+if(!count($setup['command']['arguments'])) {
+	display_workers('Valid worker name not provided.');
+
+	exit(3);
+}
+
+foreach($setup['command']['arguments'] as $worker) {
+	if(array_key_exists($worker, $setup['configuration']['workers'])) {
+		$setup['workers'][] = $worker;
+	}
+}
+
+if(count($setup['command']['arguments']) > count($setup['workers'])) {
+	display_workers(
+		"Invalid workers specified:\n\t- ".implode(
+			"\n\t- ",
+			array_diff(
+				$setup['command']['arguments'],
+				$setup['workers']
+			)
+		)
+	);
+
+	exit(4);
+}
+
 
 // Setup Gearman connection to servers
 $gearmanWorker = new Worker(
-	$options->get('Gearman.servers', '127.0.0.1:4730')
+	$setup['configuration']->get('servers', '127.0.0.1:4730')
 );
 
-// Register worker RegisterRemoteConnection
-$gearmanWorker->registerFunction('registerRemoteConnection',
-	function(WorkerJob $job) use ($options) {
-		$worker = RegisterRemoteConnection::getInstance($options);
 
-		$log = [];
+// Register workers
+foreach($setup['workers'] as $workerName) {
+	$gearmanWorker->registerFunction(
+		$workerName,
+		function(WorkerJob $job) use ($setup, $workerName) {
+			$workerClass = $setup['configuration']->get('workers.'.$workerName.'.class');
 
-		$returnValue = $worker->run($job, $log);
+			$worker = $workerClass::getInstance(
+				$setup['configuration']->getSubset('workers.'.$workerName.'.options')
+			);
 
-		if(count($log)) {
-			echo "Error:\t".implode(PHP_EOL."Error:\t", $log).PHP_EOL;
+			$worker->setGearmanServers($setup['configuration']->get('servers', '127.0.0.1:4730'));
+
+			$log = [];
+
+			$returnValue = $worker->run($job, $log);
+
+			if(count($log)) {
+				echo "Error:\t".implode(PHP_EOL."Error:\t", $log).PHP_EOL;
+			}
+
+			return $returnValue;
 		}
+	);
+}
 
-		return $returnValue;
-	}
-);
 
-// Register worker ReturnRemoteConnection
-$gearmanWorker->registerFunction('returnRemoteConnection',
-	function(WorkerJob $job) use ($options) {
-		$worker = ReturnRemoteConnection::getInstance($options);
-
-		$log = [];
-
-		$returnValue = $worker->run($job, $log);
-
-		if(count($log)) {
-			echo "Error:\t".implode(PHP_EOL."Error:\t", $log).PHP_EOL;
-		}
-
-		return $returnValue;
-	}
-);
-
-// Register worker ImportClaims
-$gearmanWorker->registerFunction('importClaims',
-	function(WorkerJob $job) use ($options) {
-		$worker = ImportClaims::getInstance($options);
-
-		$log = [];
-
-		$returnValue = $worker->run($job, $log);
-
-		if(count($log)) {
-			echo "Error:\t".implode(PHP_EOL."Error:\t", $log).PHP_EOL;
-		}
-
-		return $returnValue;
-	}
-);
-
+// Run workers
 $gearmanWorker->work();

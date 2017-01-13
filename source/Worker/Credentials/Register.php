@@ -1,29 +1,31 @@
 <?php
 
-namespace SunCoastConnection\ClaimsToEMRGearman\Worker;
+namespace SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials;
 
 use \Kicken\Gearman\Job\WorkerJob;
 use \SunCoastConnection\ClaimsToEMRGearman\Worker;
 
-class RegisterRemoteConnection extends Worker {
+class Register extends Worker {
 
 	/**
-	 * Run the RegisterRemoteConnection Worker
+	 * Run the Register Worker
 	 *
 	 * @param  \Kicken\Gearman\Job\WorkerJob  $job  Job request to perform run on
 	 *
-	 * @return integer  Return code (0 = registration successful, 1 = failed to create credentials directory, 2 = failed to write configuration out to file)
+	 * @return integer  Return code:
+	 *     0 = Registration written
+	 *     1 = Failed creating credentials directory
+	 *     2 = Failed writing to credentials directory
+	 *     3 = Failed writing to credentials file
 	 */
 	public function run(WorkerJob $job, &$log) {
 		$credentialsPath = $this->options()->get('Credentials.path');
 
 		if(!file_exists($credentialsPath)) {
 			if(!mkdir($credentialsPath, 0700, true)) {
-				// Crecdentials directory does not exist and creation failed
 				return 1;
 			}
 		} elseif(!is_writable($credentialsPath)) {
-			// Crecdentials directory is not writable
 			return 2;
 		}
 
@@ -33,7 +35,8 @@ class RegisterRemoteConnection extends Worker {
 		// 	'client' => 'tokenName',
 		// 	'ssh' => [
 		// 		'host' => '1.2.3.4',
-		// 		'site' => 'sitesDirectoryPath',
+		// 		'port' => 22,
+		// 		'site' => 'sitesDirectoryPath'
 		// 	],
 		// 	'mysql' => [
 		// 		'host' => '1.2.3.4',
@@ -47,7 +50,6 @@ class RegisterRemoteConnection extends Worker {
 		$remoteConfigurationPath = $credentialsPath.'/'.$workload['client'].'.json';
 
 		if(file_exists($remoteConfigurationPath) && !is_writable($remoteConfigurationPath)) {
-			// Configuration file exists but is not writable
 			return 3;
 		}
 
@@ -59,7 +61,6 @@ class RegisterRemoteConnection extends Worker {
 			).PHP_EOL
 		);
 
-		// Registration successful
 		return 0;
 	}
 }
