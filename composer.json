@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "suncoast-connection/claimstoemr": "dev-master",
+        "suncoast-connection/claimstoemr": "0.1.*",
         "kicken/gearman-php": "dev-master",
         "phpseclib/phpseclib": "2.0.*",
         "symfony/console": "^3.2"

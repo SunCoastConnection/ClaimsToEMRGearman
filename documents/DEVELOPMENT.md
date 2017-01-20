@@ -14,7 +14,6 @@ It's required to have the following installed and configured to run:
 - [**Vagrant**](vagrantup.com): Virtual Machine configuration management
     - Requires: [**parallels**](parallels.com), [**vmware**](vmware.com), or
 [**virtualbox**](virtualbox.org)
-- 
 
 **NOTE**: All `vagrant` commands are run from your host system in the projects
 base directory.
