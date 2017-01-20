@@ -3,9 +3,9 @@
 namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Worker\Credentials;
 
 use \Kicken\Gearman\Job\WorkerJob;
-use \org\bovigo\vfs\vfsStream;
 use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
 use \SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Register;
+use \org\bovigo\vfs\vfsStream;
 
 class RegisterTest extends BaseTestCase {
 

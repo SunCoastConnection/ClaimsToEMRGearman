@@ -5,12 +5,12 @@ namespace SunCoastConnection\ClaimsToEMRGearman\Worker\Claims;
 use \Carbon\Carbon;
 use \Exception;
 use \Kicken\Gearman\Job\WorkerJob;
-use \SunCoastConnection\ClaimsToEMR\Document\Raw;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker;
+use \SunCoastConnection\ClaimsToEMR\Cache;
 use \SunCoastConnection\ClaimsToEMR\Models\PqrsImportFiles;
 use \SunCoastConnection\ClaimsToEMR\Store\Database;
 use \SunCoastConnection\ClaimsToEMR\X12N837;
-use \SunCoastConnection\ClaimsToEMR\X12N837\Cache;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker;
+use \SunCoastConnection\ParseX12\Raw;
 
 class Process extends Worker {
 

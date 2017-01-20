@@ -40,7 +40,16 @@
     "repositories": [
         {
             "type": "vcs",
-            "url":  "https://github.com/SunCoastConnection/ClaimsToEMR.git"
+            "url": "git@github.com:SunCoastConnection/ParseX12.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:SunCoastConnection/ParseX12N837.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:SunCoastConnection/ClaimsToEMR.git"
         }
-    ]
+    ],
+    "minimum-stability": "dev"
 }

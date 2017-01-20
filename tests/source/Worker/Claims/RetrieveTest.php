@@ -4,11 +4,11 @@ namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Worker\Credentials;
 
 use \Exception;
 use \Kicken\Gearman\Job\WorkerJob;
+use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker\Claims\Retrieve;
 use \org\bovigo\vfs\vfsStream;
 use \phpseclib\Crypt\RSA;
 use \phpseclib\Net\SFTP;
-use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker\Claims\Retrieve;
 
 class RetrieveTest extends BaseTestCase {
 

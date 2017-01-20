@@ -4,14 +4,14 @@ namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Worker\Claims;
 
 use \Exception;
 use \Kicken\Gearman\Job\WorkerJob;
-use \org\bovigo\vfs\vfsStream;
-use \SunCoastConnection\ClaimsToEMR\Document\Raw;
+use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker\Claims\Process;
+use \SunCoastConnection\ClaimsToEMR\Cache;
 use \SunCoastConnection\ClaimsToEMR\Models\PqrsImportFiles;
 use \SunCoastConnection\ClaimsToEMR\Store\Database;
 use \SunCoastConnection\ClaimsToEMR\X12N837;
-use \SunCoastConnection\ClaimsToEMR\X12N837\Cache;
-use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker\Claims\Process;
+use \SunCoastConnection\ParseX12\Raw;
+use \org\bovigo\vfs\vfsStream;
 
 class ProcessTest extends BaseTestCase {
 

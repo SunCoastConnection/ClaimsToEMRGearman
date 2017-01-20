@@ -3,9 +3,9 @@
 namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Worker\Credentials;
 
 use \Kicken\Gearman\Job\WorkerJob;
-use \org\bovigo\vfs\vfsStream;
 use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
 use \SunCoastConnection\ClaimsToEMRGearman\Worker\Credentials\Lookup;
+use \org\bovigo\vfs\vfsStream;
 
 class LookupTest extends BaseTestCase {
 

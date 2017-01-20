@@ -4,9 +4,9 @@ namespace SunCoastConnection\ClaimsToEMRGearman\Worker\Claims;
 
 use \Exception;
 use \Kicken\Gearman\Job\WorkerJob;
+use \SunCoastConnection\ClaimsToEMRGearman\Worker;
 use \phpseclib\Crypt\RSA;
 use \phpseclib\Net\SFTP;
-use \SunCoastConnection\ClaimsToEMRGearman\Worker;
 
 class Retrieve extends Worker {
 

@@ -2,8 +2,8 @@
 
 namespace SunCoastConnection\ClaimsToEMRGearman\Console;
 
-use \Kicken\Gearman\Worker;
 use \Kicken\Gearman\Job\WorkerJob;
+use \Kicken\Gearman\Worker;
 use \SunCoastConnection\ClaimsToEMRGearman\Console\Command;
 use \Symfony\Component\Console\Input\InputArgument;
 use \Symfony\Component\Console\Input\InputInterface;

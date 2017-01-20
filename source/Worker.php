@@ -6,7 +6,7 @@ use \Kicken\Gearman\Client;
 use \Kicken\Gearman\Job\JobPriority;
 use \Kicken\Gearman\Job\WorkerJob;
 use \Kicken\Gearman\Protocol\Connection;
-use \SunCoastConnection\ClaimsToEMR\Document\Options;
+use \SunCoastConnection\ParseX12\Options;
 
 abstract class Worker {
 
@@ -15,7 +15,7 @@ abstract class Worker {
 	/**
 	 * Get instance of Worker class with provided options
 	 *
-	 * @param  \SunCoastConnection\ClaimsToEMR\Document\Options  $options  Options to create Worker object with
+	 * @param  \SunCoastConnection\ParseX12\Options  $options  Options to create Worker object with
 	 *
 	 * @return \SunCoastConnection\ClaimsToEMRGearman\Worker  Worker object
 	 */
@@ -26,7 +26,7 @@ abstract class Worker {
 	/**
 	 * Create a new Job
 	 *
-	 * @param \SunCoastConnection\ClaimsToEMR\Document\Options  $options  Options to create Worker object with
+	 * @param \SunCoastConnection\ParseX12\Options  $options  Options to create Worker object with
 	 */
 	public function __construct(Options $options) {
 		$this->options($options);
@@ -35,9 +35,9 @@ abstract class Worker {
 	/**
 	 * Set Job options or retrieve Job options
 	 *
-	 * @param  \SunCoastConnection\ClaimsToEMR\Document\Options|null  $setOptions  Options to set Worker object with
+	 * @param  \SunCoastConnection\ParseX12\Options|null  $setOptions  Options to set Worker object with
 	 *
-	 * @return \SunCoastConnection\ClaimsToEMR\Document\Options|null  Worker options or null when not set
+	 * @return \SunCoastConnection\ParseX12\Options|null  Worker options or null when not set
 	 */
 	protected function options(Options $setOptions = null) {
 		static $options = null;

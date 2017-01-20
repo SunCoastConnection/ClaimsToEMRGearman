@@ -2,7 +2,7 @@
 
 namespace SunCoastConnection\ClaimsToEMRGearman\Console;
 
-use \SunCoastConnection\ClaimsToEMR\Document\Options;
+use \SunCoastConnection\ParseX12\Options;
 use \Symfony\Component\Console\Command\Command as SymfonyCommand;
 use \Symfony\Component\Console\Input\InputInterface;
 use \Symfony\Component\Console\Input\InputOption;

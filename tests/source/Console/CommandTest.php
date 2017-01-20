@@ -2,12 +2,12 @@
 
 namespace SunCoastConnection\ClaimsToEMRGearman\Tests\Console {
 
-	use \org\bovigo\vfs\vfsStream;
-	use \SunCoastConnection\ClaimsToEMR\Document\Options;
-	use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
 	use \SunCoastConnection\ClaimsToEMRGearman\Console\Command;
+	use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
+	use \SunCoastConnection\ParseX12\Options;
 	use \Symfony\Component\Console\Input\InputInterface;
 	use \Symfony\Component\Console\Output\OutputInterface;
+	use \org\bovigo\vfs\vfsStream;
 
 	class CommandTest extends BaseTestCase {
 

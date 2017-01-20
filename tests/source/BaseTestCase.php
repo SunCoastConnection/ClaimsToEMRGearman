@@ -2,8 +2,8 @@
 
 namespace SunCoastConnection\ClaimsToEMRGearman\Tests;
 
-use \PHPUnit_Framework_TestCase;
 use \Mockery;
+use \PHPUnit_Framework_TestCase;
 use \ReflectionClass;
 
 class BaseTestCase extends PHPUnit_Framework_TestCase {

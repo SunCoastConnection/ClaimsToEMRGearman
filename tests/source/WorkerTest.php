@@ -3,10 +3,10 @@
 namespace SunCoastConnection\ClaimsToEMR\Tests;
 
 use \Kicken\Gearman\Client;
-use \SunCoastConnection\ClaimsToEMR\Document\Options;
 use \SunCoastConnection\ClaimsToEMRGearman\Tests\BaseTestCase;
 use \SunCoastConnection\ClaimsToEMRGearman\Tests\WorkerMock;
 use \SunCoastConnection\ClaimsToEMRGearman\Worker;
+use \SunCoastConnection\ParseX12\Options;
 
 class WorkerTest extends BaseTestCase {
 
