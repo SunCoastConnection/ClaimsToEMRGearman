@@ -16,8 +16,6 @@
         "symfony/console": "^3.2"
    	},
     "require-dev": {
-        "kicken/gearman-php": "dev-master",
-        "phpseclib/phpseclib": "2.0.*",
         "laravel/homestead": "^4",
         "phploc/phploc": "3.0.*",
         "phpunit/phpunit": "5.3.*",

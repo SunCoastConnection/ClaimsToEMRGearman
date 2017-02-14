@@ -4,6 +4,7 @@
 
 It's required to have the following installed and configured to run:
 
+- [**Gearman Tools**](gearman.org): Provide Gearman client API bindings
 - [**Composer**](getcomposer.org): Standard PHP dependency management
     - Requires: [**PHP 5.6.0+**](php.net) and [**GIT**](git-scm.com)
 - [**GIT**](git-scm.com): DVCS (Distributed Version Control System) project

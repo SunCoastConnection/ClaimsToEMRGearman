@@ -41,10 +41,32 @@ echo "## Installing dependent Python packages"
 sudo easy_install supervisor
 
 echo "## Configuring Supervisor Gearman initialization settings"
+
 sudo bash -c "cat > /etc/supervisor/conf.d/gearman-claimstoemr.conf" << EOL
-[program:gearman-claimstoemr]
-directory=/home/vagrant/ClaimsToEMR
-command=/home/vagrant/ClaimsToEMR/gearman-workers
+[program:gearman-ClaimsToEMR.Credentials.Lookup]
+directory=/home/vagrant/ClaimsToEMRGearman
+command=/home/vagrant/ClaimsToEMRGearman/gearman-worker register ClaimsToEMR.Credentials.Lookup
+autorestart=true
+process_name=%(program_name)s-%(process_num)s
+numprocs=10
+
+[program:gearman-ClaimsToEMR.Credentials.Register]
+directory=/home/vagrant/ClaimsToEMRGearman
+command=/home/vagrant/ClaimsToEMRGearman/gearman-worker register ClaimsToEMR.Credentials.Register
+autorestart=true
+process_name=%(program_name)s-%(process_num)s
+numprocs=10
+
+[program:gearman-ClaimsToEMR.Claims.Retrieve]
+directory=/home/vagrant/ClaimsToEMRGearman
+command=/home/vagrant/ClaimsToEMRGearman/gearman-worker register ClaimsToEMR.Claims.Retrieve
+autorestart=true
+process_name=%(program_name)s-%(process_num)s
+numprocs=10
+
+[program:gearman-ClaimsToEMR.Claims.Process]
+directory=/home/vagrant/ClaimsToEMRGearman
+command=/home/vagrant/ClaimsToEMRGearman/gearman-worker register ClaimsToEMR.Claims.Process
 autorestart=true
 process_name=%(program_name)s-%(process_num)s
 numprocs=10
