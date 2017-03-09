@@ -116,7 +116,6 @@ class Process extends Worker {
 			array_merge(
 				$this->options()->get('Claims.Store.connections.mysql'),
 				$this->options()->get('Remote.mysql')
-
 			)
 		);
 

@@ -23,7 +23,7 @@ class Available extends Command {
 
 		$output->writeln('Workers:');
 
-		foreach($this->configuration->get('workers') as $name => $worker) {
+		foreach(array_keys($this->configuration->get('workers')) as $name) {
 			$output->writeln("\t".$name);
 		}
 

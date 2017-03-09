@@ -1,11 +1,10 @@
-#!/usr/bin/env php
 <?php
 
 use \Symfony\Component\Console\Application;
 use \SunCoastConnection\ClaimsToEMRGearman\Console\Available;
 use \SunCoastConnection\ClaimsToEMRGearman\Console\Register;
 
-require __DIR__.'/vendor/autoload.php';
+require __DIR__.'/../vendor/autoload.php';
 
 $application = new Application();
 

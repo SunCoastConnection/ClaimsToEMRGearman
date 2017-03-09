@@ -15,12 +15,10 @@ class TemplateTest extends BaseTestCase {
 		$this->Template = $this->getMockery(
 			Template::class
 		)->makePartial();
-
 	}
 
 	public function tearDown() {
 		parent::tearDown();
-
 	}
 
 	/**

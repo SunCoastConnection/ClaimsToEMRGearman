@@ -53,7 +53,7 @@ class Register extends Worker {
 			return 3;
 		}
 
-		$fileWritten = file_put_contents(
+		file_put_contents(
 			$remoteConfigurationPath,
 			json_encode(
 				$workload,

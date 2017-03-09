@@ -4,4 +4,4 @@
 /vendor/
 /composer.lock
 /composer.phar
-/utilities/vagrant/Homestead.yaml
+/Homestead.yaml

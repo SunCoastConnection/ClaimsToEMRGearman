@@ -19,7 +19,7 @@ abstract class Worker {
 	 *
 	 * @return \SunCoastConnection\ClaimsToEMRGearman\Worker  Worker object
 	 */
-	static public function getInstance(Options $options) {
+	public static function getInstance(Options $options) {
 		return new static($options);
 	}
 

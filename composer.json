@@ -11,16 +11,19 @@
     ],
     "require": {
         "suncoast-connection/claimstoemr": "0.1.*",
-        "kicken/gearman-php": "dev-master",
+        "kicken/gearman-php": "^1",
         "phpseclib/phpseclib": "2.0.*",
         "symfony/console": "^3.2"
    	},
     "require-dev": {
         "laravel/homestead": "^4",
-        "phploc/phploc": "3.0.*",
-        "phpunit/phpunit": "5.3.*",
+        "mikey179/vfsStream": "1.6.*",
         "mockery/mockery": "0.9.*",
-        "mikey179/vfsStream": "1.6.*"
+        "phploc/phploc": "^3",
+        "phpmd/phpmd": "^2.4",
+        "phpunit/phpunit": "^5",
+        "sebastian/phpcpd": "^2.0",
+        "squizlabs/php_codesniffer": "^2.5"
     },
     "autoload": {
         "psr-4": {
@@ -31,6 +34,22 @@
         "psr-4": {
             "SunCoastConnection\\ClaimsToEMRGearman\\Tests\\": "tests/source"
         }
+    },
+    "scripts": {
+        "phpcpd": "./vendor/bin/phpcpd source/",
+        "phpcs": "./vendor/bin/phpcs",
+        "phplint": "php -l source/",
+        "phploc": "./vendor/bin/phploc --progress --count-tests --exclude='vendor' ./",
+        "phpmd": "./vendor/bin/phpmd source/ text phpmd.xml.dist",
+        "phpunit": "./vendor/bin/phpunit",
+        "dev-tests": [
+            "@phplint",
+            "@phpunit",
+            "@phpmd",
+            "@phpcpd",
+            "@phpcs",
+            "@phploc"
+        ]
     },
     "config": {
         "preferred-install": "dist"

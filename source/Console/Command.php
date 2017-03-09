@@ -24,7 +24,9 @@ class Command extends SymfonyCommand {
 				realpath($configPath)
 			];
 		} else {
-			$appPath = realpath($GLOBALS['argv'][0]);
+			global $argv;
+			$appPath = realpath($argv[0]);
+			// $appPath = realpath($GLOBALS['argv'][0]);
 			$confFilename = basename($appPath).'.php';
 			$appDir = dirname($appPath);
 
